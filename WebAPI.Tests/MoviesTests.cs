@@ -12,7 +12,7 @@ namespace WebAPI.Tests
     public class MoviesTests
     {
         [Test]
-        public async Task MoviesTest_GetRequest_Returns200Response()
+        public void MoviesTest_GetRequest_Returns200Response()
         {
             //Arrange
             var controller = new MoviesController();
