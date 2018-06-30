@@ -17,16 +17,19 @@ namespace WebAPI.Tests
         public void MovieDbContext_Seeding_HasData()
         {
             //Arrange
-            var db = new MovieDbContext();
-            //Act
-            db.Database.EnsureDeleted();
-            db.Database.Migrate();
-            db.Seed();
-            var movies = db.Movies.Include(m => m.MovieActors).ToList();
-            var actors = db.Actors.Include(a => a.MovieActors).ToList();
-            //Assert
-            movies.Should().NotBeNullOrEmpty();
-            actors.Should().NotBeNullOrEmpty();
+            using (var db = new MovieDbContext())
+            {
+                //Act
+                db.Database.EnsureDeleted();
+                db.Database.Migrate();
+                db.Seed();
+                var movies = db.Movies.Include(m => m.MovieActors).ToList();
+                var actors = db.Actors.Include(a => a.MovieActors).ToList();
+
+                //Assert
+                movies.Should().NotBeNullOrEmpty();
+                actors.Should().NotBeNullOrEmpty();
+            }                
         }
     }
 }

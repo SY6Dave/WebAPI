@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
+using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
@@ -10,11 +13,19 @@ namespace WebAPI.Controllers
     [ApiController]
     public class MoviesController : ControllerBase
     {
+        private MovieDbContext dbContext;
         // GET api/movies
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(new string[] { "They Live", "Prince of Darkness" });
+            using (dbContext = new MovieDbContext())
+            {
+                var movies = dbContext.Movies.Include(m => m.MovieActors).ThenInclude(ma => ma.Actor);
+                var json = JsonConvert.SerializeObject(movies,
+                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+
+                return Ok(json);
+            }
         }
 
         // GET api/movies/1
