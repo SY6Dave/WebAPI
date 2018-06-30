@@ -5,6 +5,7 @@ using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WebAPI.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebAPI.Tests
 {
