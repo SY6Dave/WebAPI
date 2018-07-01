@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
+using Newtonsoft.Json.Linq;
 
 namespace WebAPI.Controllers
 {
@@ -13,19 +14,16 @@ namespace WebAPI.Controllers
     [ApiController]
     public class MoviesController : ControllerBase
     {
-        private MovieDbContext dbContext;
         // GET api/movies
         [HttpGet]
         public IActionResult Get()
         {
-            using (dbContext = new MovieDbContext())
+            using (var dbContext = new MovieDbContext())
             {
                 var movies = dbContext.Movies.Include(m => m.MovieActors)
                     .ThenInclude(ma => ma.Actor);
-                var json = JsonConvert.SerializeObject(movies,
-                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 
-                return Ok(json);
+                return Ok(movies.ToList());
             }
         }
 
@@ -33,7 +31,7 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            using (dbContext = new MovieDbContext())
+            using (var dbContext = new MovieDbContext())
             {
                 try
                 {
@@ -41,23 +39,45 @@ namespace WebAPI.Controllers
                    .ThenInclude(ma => ma.Actor)
                    .Single();
 
-                    var json = JsonConvert.SerializeObject(movie,
-                        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
-
-                    return Ok(json);
+                    return Ok(movie);
                 }
-                catch(InvalidOperationException ex)
+                catch (InvalidOperationException ex)
                 {
-                    return NotFound();
+                    return NotFound("Unable to find a single movie with the requested ID");
                 }
-               
+
             }
         }
 
         // POST api/movies
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] MovieModel value)
         {
+            if (value == null)
+                return BadRequest();
+
+            using (var dbContext = new MovieDbContext())
+            {
+                if (value.MovieActors != null)
+                {
+                    //Add the relationship between Movie and Actor
+                    foreach (var ma in value.MovieActors)
+                    {
+                        try
+                        {
+                            ma.Actor = dbContext.Actors.Where(a => a.ActorId == ma.ActorId).Single();
+                        }
+                        catch(InvalidOperationException ex)
+                        {
+                            return BadRequest("Unable to find actor ID in database");
+                        }
+                        ma.Movie = value;
+                    }
+                }
+                dbContext.Movies.Add(value);
+                await dbContext.SaveChangesAsync();
+                return Created(new Uri("/api/movies", UriKind.Relative), value);
+            }
         }
 
         // PUT api/movies/1
@@ -71,5 +91,11 @@ namespace WebAPI.Controllers
         public void Delete(int id)
         {
         }
+    }
+
+    class Test
+    {
+        public int id { get; set; }
+        public string name { get; set; }
     }
 }

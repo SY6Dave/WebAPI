@@ -39,7 +39,6 @@ namespace WebAPI
 
             services.AddMvc().AddJsonOptions(options =>
             {
-                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
