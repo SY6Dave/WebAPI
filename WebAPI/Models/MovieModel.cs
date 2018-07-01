@@ -10,7 +10,9 @@ namespace WebAPI.Models
     {
         [Key]
         public int MovieId { get; set; }
+        [MinLength(1)]
         public string Title { get; set; }
+        [MaxLength(256)]
         public string Description { get; set; }
         public ICollection<MovieActor> MovieActors { get; set; }
 

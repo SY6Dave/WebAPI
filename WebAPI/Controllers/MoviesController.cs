@@ -45,7 +45,6 @@ namespace WebAPI.Controllers
                 {
                     return NotFound("Unable to find a single movie with the requested ID");
                 }
-
             }
         }
 
@@ -82,8 +81,33 @@ namespace WebAPI.Controllers
 
         // PUT api/movies/1
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(int id, [FromBody] MovieModel value)
         {
+            if (value == null)
+                return BadRequest();
+
+            using (var dbContext = new MovieDbContext())
+            {
+                try
+                {
+                    var movie = dbContext.Movies.Where(m => m.MovieId == id).Include(m => m.MovieActors)
+                   .ThenInclude(ma => ma.Actor)
+                   .Single();
+
+                   if(movie.Title != value.Title && value.Title != null)
+                        movie.Title = value.Title;
+
+                    if(movie.Description != value.Description && value.Description != null)
+                        movie.Description = value.Description;
+
+                    await dbContext.SaveChangesAsync();
+                    return Ok(movie);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return NotFound("Unable to find a single movie with the requested ID");
+                }
+            }
         }
 
         // DELETE api/movies/1
@@ -91,11 +115,5 @@ namespace WebAPI.Controllers
         public void Delete(int id)
         {
         }
-    }
-
-    class Test
-    {
-        public int id { get; set; }
-        public string name { get; set; }
     }
 }
