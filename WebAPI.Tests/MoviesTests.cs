@@ -251,5 +251,30 @@ namespace WebAPI.Tests
                 putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             }
         }
+
+        /// <summary>
+        /// Checks that a movie can be irreversably deleted by ID
+        /// </summary>
+        /// <param name="movieId">The ID of the movie to delete</param>
+        /// <returns></returns>
+        [Test]
+        [TestCase(1)]
+        [TestCase(100)]
+        public async Task Movies_Delete_RemovedSuccessfully(int movieId)
+        {
+            //Arrange
+            var originalMovie = await testClient.GetAsync(String.Format("{0}/{1}", URI, movieId));
+
+            //Act
+            var postResponse = await testClient.DeleteAsync(String.Format("{0}/{1}", URI, movieId));
+
+            //Assert
+            postResponse.StatusCode.Should().Be(originalMovie.StatusCode); //if it couldn't be found originally, it can't be deleted
+            if(postResponse.IsSuccessStatusCode) //if it deleted, double-check it can't be restored
+            {
+                var attemptGet = await testClient.GetAsync(String.Format("{0}/{1}", URI, movieId));
+                attemptGet.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            }
+        }
     }
 }

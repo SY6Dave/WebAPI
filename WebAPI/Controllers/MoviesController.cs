@@ -112,8 +112,25 @@ namespace WebAPI.Controllers
 
         // DELETE api/movies/1
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            using (var dbContext = new MovieDbContext())
+            {
+                try
+                {
+                    var movie = dbContext.Movies.Where(m => m.MovieId == id)
+                        .Single();
+
+                    dbContext.Movies.Remove(movie);
+                    await dbContext.SaveChangesAsync();
+
+                    return Ok("Movie deleted");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return NotFound("Unable to find a single movie with the requested ID");
+                }
+            }
         }
     }
 }
