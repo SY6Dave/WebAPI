@@ -12,14 +12,14 @@ using System.Net;
 using System;
 
 namespace WebAPI.Tests
-{
+{ 
     [TestFixture]
     public class MoviesTests
     {
         private TestServer testServer;
         private HttpClient testClient;
         private const string URI = "/api/movies";
-
+        
         [SetUp]
         public void SetUp()
         {
@@ -82,7 +82,7 @@ namespace WebAPI.Tests
             //Assert
             getResponse.IsSuccessStatusCode.Should().BeTrue();
             movie.Should().NotBeNull();
-        }
+        } 
 
         /// <summary>
         /// Checks that if retrieving a non-existent ID, a NotFound status code is responded
@@ -165,7 +165,7 @@ namespace WebAPI.Tests
         }
 
         /// <summary>
-        /// Checks that if a non-existent actor is referenced in a post, this is handled as a Bad Request
+        /// Checks that if a non-existent actor is referenced in a post, this is handled as a Not Found response
         /// </summary>
         /// <param name="title">Title to go in the movie model</param>
         /// <param name="description">Description to go in the movie model</param>
@@ -183,7 +183,7 @@ namespace WebAPI.Tests
             var postResponse = await testClient.PostAsJsonAsync(URI, movieModel);
 
             //Assert
-            postResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            postResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         /// <summary>

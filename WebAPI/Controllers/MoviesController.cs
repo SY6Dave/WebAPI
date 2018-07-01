@@ -91,11 +91,13 @@ namespace WebAPI.Controllers
         /// <param name="value">A MovieModel object which can also contain references to existing actors by ID</param>
         /// <returns>Returns the newly created movie</returns>
         /// <response code="201">The movie was created successfully</response>
-        /// <response code="400">If a single actor with one of the referenced IDs cannot be found</response>
+        /// <response code="400">If a null model was passed in</response>
+        /// <response code="404">If a referenced actor ID cannot be found</response>
         // POST api/movies
         [HttpPost]
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> Post([FromBody] MovieModel value)
         {
             if (value == null)
@@ -115,7 +117,7 @@ namespace WebAPI.Controllers
                         catch(InvalidOperationException ex)
                         {
                             _log.LogError(ex.GetType().FullName + " :: " + ex.Message);
-                            return BadRequest("Unable to find actor ID in database");
+                            return NotFound("Unable to find actor ID in database");
                         }
                         ma.Movie = value;
                     }
@@ -141,7 +143,7 @@ namespace WebAPI.Controllers
         /// <param name="value">A MovieModel containing the data to change</param>
         /// <returns>The newly updated movie</returns>
         /// <response code="200">The movie was updated successfully</response>
-        /// <response code="404">If a single actor with movie with the requested ID cannot be found</response>
+        /// <response code="404">If a single movie with the requested ID cannot be found</response>
         /// <response code="400">If a null model was passed in</response>
         // PUT api/movies/1
         [HttpPut("{id}")]
@@ -184,7 +186,7 @@ namespace WebAPI.Controllers
         /// <param name="id">The ID of the movie to delete</param>
         /// <returns>Returns a success notification once the movie has been deleted</returns>
         /// <response code="200">The movie was deleted successfully</response>
-        /// <response code="404">If a single movie with movie with the requested ID cannot be found</response>
+        /// <response code="404">If a single movie with the requested ID cannot be found</response>
         // DELETE api/movies/1
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
