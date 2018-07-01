@@ -29,8 +29,7 @@ namespace WebAPI.Tests
 
         /// <summary>
         /// Reads the database and then performs a GET request on the controller
-        /// Checks that the returned JSON, when deserialized, is equal to the
-        /// original data
+        /// Checks that the returned JSON, when deserialized, is equal to the original data
         /// </summary>
         [Test]
         public void Movies_GetRequest_SerializesOK()
@@ -48,7 +47,7 @@ namespace WebAPI.Tests
             getResponse.Should().NotBeNull();
             var json = (string)getResponse.Value;
             var deserialisedMovies = JsonConvert.DeserializeObject<List<MovieModel>>(json);
-            deserialisedMovies.Count().Should().Be(moviesData.Count());
+            deserialisedMovies.SequenceEqual(moviesData).Should().BeTrue();
         }
     }
 }
