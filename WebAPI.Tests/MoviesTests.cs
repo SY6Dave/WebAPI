@@ -49,5 +49,47 @@ namespace WebAPI.Tests
             var deserialisedMovies = JsonConvert.DeserializeObject<List<MovieModel>>(json);
             deserialisedMovies.SequenceEqual(moviesData).Should().BeTrue();
         }
+
+        [Test]
+        [TestCase(1)]
+        public void Movies_GetById_ReturnsOK(int id)
+        {
+            //Arrange
+            var controller = new MoviesController();
+            //Act
+            var getResponse = controller.Get(id);
+            //Assert
+            getResponse.Should().BeOfType(typeof(OkObjectResult));
+        }
+
+        [Test]
+        [TestCase(1)]
+        public void Movies_GetById_ReturnsSingle(int id)
+        {
+            //Arrange
+            var controller = new MoviesController();
+            //Act
+            var getResponse = controller.Get(id) as OkObjectResult;
+            //Assert
+            getResponse.Should().NotBeNull();
+            var json = (string)getResponse.Value;
+            var deserializedMovie = JsonConvert.DeserializeObject<MovieModel>(json);
+            deserializedMovie.Should().NotBeNull();
+        }
+
+        [Test]
+        [TestCase(99)]
+        [TestCase(-1)]
+        [TestCase(0)]
+        [TestCase(int.MaxValue)]
+        public void Movies_GetById_ReturnsNotFound(int id)
+        {
+            //Arrange
+            var controller = new MoviesController();
+            //Act
+            var getResponse = controller.Get(id);
+            //Assert
+            getResponse.Should().BeOfType(typeof(NotFoundResult));
+        }
     }
 }

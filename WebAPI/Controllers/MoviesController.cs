@@ -20,7 +20,8 @@ namespace WebAPI.Controllers
         {
             using (dbContext = new MovieDbContext())
             {
-                var movies = dbContext.Movies.Include(m => m.MovieActors).ThenInclude(ma => ma.Actor);
+                var movies = dbContext.Movies.Include(m => m.MovieActors)
+                    .ThenInclude(ma => ma.Actor);
                 var json = JsonConvert.SerializeObject(movies,
                 new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 
@@ -30,9 +31,27 @@ namespace WebAPI.Controllers
 
         // GET api/movies/1
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            using (dbContext = new MovieDbContext())
+            {
+                try
+                {
+                    var movie = dbContext.Movies.Where(m => m.MovieId == id).Include(m => m.MovieActors)
+                   .ThenInclude(ma => ma.Actor)
+                   .Single();
+
+                    var json = JsonConvert.SerializeObject(movie,
+                        new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+
+                    return Ok(json);
+                }
+                catch(InvalidOperationException ex)
+                {
+                    return NotFound();
+                }
+               
+            }
         }
 
         // POST api/movies
