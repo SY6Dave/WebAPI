@@ -9,6 +9,8 @@
 
 This document provides a summary of the Movies RESTful WebAPI, which was created as a proof-of-concept application to store data in an in-memory database and return it back over HTTP in JSON format.
 
+*The database is seeded with a set of test data and is re-created on each launch of the application. A possible future enhancement would be to make the seeding optional via launch parameters.*
+
 ## Dependencies
 
 The following frameworks and packages were used to implement the application:
