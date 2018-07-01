@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
-using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
-using System.Xml;
-using System.Reflection;
 
 namespace WebAPI.Controllers
 {
@@ -24,8 +19,15 @@ namespace WebAPI.Controllers
             _log = log;
         }
 
+
+        /// <summary>
+        /// Get all the movies in the database
+        /// </summary>
+        /// <returns>A list of all movies</returns>
+        /// <response code="200">Returns the list of movies</response>
         // GET api/movies
         [HttpGet]
+        [ProducesResponseType(200)]
         public IActionResult Get()
         {
             using (var dbContext = new MovieDbContext())
@@ -37,8 +39,17 @@ namespace WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Get a specific movie by ID
+        /// </summary>
+        /// <param name="id">The ID of the movie to get</param>
+        /// <returns>The movie requested</returns>
+        /// <response code="200">Returns the movie requested</response>
+        /// <response code="404">If a single movie with the requested ID cannot be found</response>
         // GET api/movies/1
         [HttpGet("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public IActionResult Get(int id)
         {
             using (var dbContext = new MovieDbContext())
@@ -59,8 +70,32 @@ namespace WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Create a new movie
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /api/movies
+        ///     {
+	    ///         "Title":"Jurassic Park",
+	    ///         "Description":"Dinosaurs",
+	    ///         "MovieActors":
+	    ///          [
+		///             {
+		///             	"ActorId": 5
+        ///             }
+	    ///          ]
+        ///     }
+        /// </remarks>
+        /// <param name="value">A MovieModel object which can also contain references to existing actors by ID</param>
+        /// <returns>Returns the newly created movie</returns>
+        /// <response code="201">The movie was created successfully</response>
+        /// <response code="400">If a single actor with one of the referenced IDs cannot be found</response>
         // POST api/movies
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> Post([FromBody] MovieModel value)
         {
             if (value == null)
@@ -91,8 +126,28 @@ namespace WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Update an existing movie's title or description
+        /// </summary>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     PUT /api/movies/1
+        ///     {
+        ///         "Description": "This movie recently won an oscar"
+        ///     }
+        /// </remarks>
+        /// <param name="id">The ID of the movie to update</param>
+        /// <param name="value">A MovieModel containing the data to change</param>
+        /// <returns>The newly updated movie</returns>
+        /// <response code="200">The movie was updated successfully</response>
+        /// <response code="404">If a single actor with movie with the requested ID cannot be found</response>
+        /// <response code="400">If a null model was passed in</response>
         // PUT api/movies/1
         [HttpPut("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> Put(int id, [FromBody] MovieModel value)
         {
             if (value == null)
@@ -123,8 +178,17 @@ namespace WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// Delete a specified movie
+        /// </summary>
+        /// <param name="id">The ID of the movie to delete</param>
+        /// <returns>Returns a success notification once the movie has been deleted</returns>
+        /// <response code="200">The movie was deleted successfully</response>
+        /// <response code="404">If a single movie with movie with the requested ID cannot be found</response>
         // DELETE api/movies/1
         [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> Delete(int id)
         {
             using (var dbContext = new MovieDbContext())

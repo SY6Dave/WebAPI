@@ -1,18 +1,13 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
-using WebAPI.Controllers;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using System.Text;
 using System.Net;
 using System;
 
