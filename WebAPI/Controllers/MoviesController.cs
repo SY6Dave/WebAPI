@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
+using System.Xml;
+using System.Reflection;
 
 namespace WebAPI.Controllers
 {
@@ -14,6 +17,13 @@ namespace WebAPI.Controllers
     [ApiController]
     public class MoviesController : ControllerBase
     {
+        private readonly ILogger<MoviesController> _log;
+
+        public MoviesController(ILogger<MoviesController> log)
+        {
+            _log = log;
+        }
+
         // GET api/movies
         [HttpGet]
         public IActionResult Get()
@@ -43,6 +53,7 @@ namespace WebAPI.Controllers
                 }
                 catch (InvalidOperationException ex)
                 {
+                    _log.LogError(ex.GetType().FullName + " :: " + ex.Message);
                     return NotFound("Unable to find a single movie with the requested ID");
                 }
             }
@@ -68,6 +79,7 @@ namespace WebAPI.Controllers
                         }
                         catch(InvalidOperationException ex)
                         {
+                            _log.LogError(ex.GetType().FullName + " :: " + ex.Message);
                             return BadRequest("Unable to find actor ID in database");
                         }
                         ma.Movie = value;
@@ -105,6 +117,7 @@ namespace WebAPI.Controllers
                 }
                 catch (InvalidOperationException ex)
                 {
+                    _log.LogError(ex.GetType().FullName + " :: " + ex.Message);
                     return NotFound("Unable to find a single movie with the requested ID");
                 }
             }
@@ -128,6 +141,7 @@ namespace WebAPI.Controllers
                 }
                 catch (InvalidOperationException ex)
                 {
+                    _log.LogError(ex.GetType().FullName + " :: " + ex.Message);
                     return NotFound("Unable to find a single movie with the requested ID");
                 }
             }

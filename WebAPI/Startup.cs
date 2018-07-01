@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Models;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace WebAPI
 {
@@ -45,7 +46,7 @@ namespace WebAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -56,6 +57,7 @@ namespace WebAPI
                 app.UseHsts();
             }
 
+            loggerFactory.AddLog4Net();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
